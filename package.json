@@ -1,0 +1,23 @@
+{
+  "name": "typescript-threejs-vr-template",
+  "version": "1.0.0",
+  "main": "app.ts",
+  "scripts": {
+    "start": "webpack-dev-server",
+    "start-network": "webpack-dev-server --host 0.0.0.0",
+    "build": "webpack --mode=production"
+  },
+  "dependencies": {
+    "babylonjs": "^4.0.3",
+    "babylonjs-gui": "^4.0.3",
+    "babylonjs-loaders": "^4.0.3",
+    "cannon": "^0.6.2",
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.5.3",
+    "webpack": "^4.39.2",
+    "webpack-cli": "^3.3.7"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^3.8.0"
+  }
+}
