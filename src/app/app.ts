@@ -1,154 +1,95 @@
 import {
   Engine,
   Scene,
-  UniversalCamera,
-  WebVRFreeCamera,
   HemisphericLight,
   Vector3,
   MeshBuilder,
   PointLight,
   CubeTexture,
-  BackgroundMaterial,
   Mesh,
   StandardMaterial,
   Texture,
   Color3,
-  AbstractMesh,
-  HighlightLayer,
   PhysicsImpostor,
-  CannonJSPlugin,
-  VRExperienceHelper,
-  WebVRController
-} from "babylonjs";
-import * as cannon from "cannon";
+  CannonJSPlugin
+} from 'babylonjs'
+import { GrabLogic } from './GrabLogic'
+import * as cannon from 'cannon'
 
-export function run() {
-  const canvas = <HTMLCanvasElement>document.getElementById("main-canvas");
-  const engine = new Engine(canvas, true);
-  const scene = createScene(engine, canvas);
-  engine.runRenderLoop(() => scene.render());
-  window.addEventListener("resize", () => engine.resize())
-}
-
-function createScene(engine: Engine, canvas: HTMLCanvasElement): Scene {
-  const scene = new Scene(engine);
-  const vrHelper = scene.createDefaultVRExperience();
-  vrHelper.enableInteractions();
-  scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
-
-  createSkybox(scene)
-  const sphere = createSphere(scene);
-  createGroundParallax(scene)
-  new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
-  new PointLight("light2", new Vector3(0, 1, -1), scene);
-  const grabbables: Set<Mesh> = new Set([sphere])
-  const grabLogic = new GrabLogic(scene, vrHelper, grabbables);
-
-  return scene;
-}
-
-class GrabLogic {
-  selectedMesh: Mesh | null = null;
-  grabbedMesh: Mesh | null = null;
-  hl: HighlightLayer;
-  private grabbables: Set<Mesh>;
-
-  constructor(scene: Scene, vrHelper: VRExperienceHelper, grabbables: Set<Mesh>) {
-    this.grabbables = grabbables;
-    this.hl = new HighlightLayer("hl", scene);
-    vrHelper.onNewMeshSelected.add((mesh) => {
-      if (mesh instanceof Mesh) {
-        this.selectedMesh = mesh;
-      }
-    });
-
-    vrHelper.onSelectedMeshUnselected.add(() => {
-      this.selectedMesh = null;
-    });
-
-    vrHelper.onControllerMeshLoaded.add((webVRController) => {
-      webVRController.onTriggerStateChangedObservable.add((stateObject) => {
-        if (webVRController.hand == "left") {
-          if (stateObject.value > 0.5) {
-            this.grabSelectedMesh(webVRController)
-          } else {
-            this.ungrabMesh(webVRController)
-          }
-        }
-      });
-    });
-  }
-
-  private ungrabMesh(webVRController: WebVRController) {
-    if (webVRController.mesh && this.grabbedMesh) {
-      webVRController.mesh.removeChild(this.grabbedMesh);
-      if (this.grabbedMesh.physicsImpostor) {
-        this.grabbedMesh.physicsImpostor.wakeUp()
-      }
-      this.hl.removeMesh(this.grabbedMesh)
-      this.grabbedMesh = null
-    }
-  }
-
-  private grabSelectedMesh(webVRController: WebVRController) {
-    if (webVRController.mesh && this.selectedMesh && this.grabbables.has(this.selectedMesh)) {
-      this.grabbedMesh = this.selectedMesh
-      webVRController.mesh.addChild(this.grabbedMesh);
-      if (this.grabbedMesh.physicsImpostor) {
-        this.grabbedMesh.physicsImpostor.sleep()
-      }
-      this.hl.addMesh(this.grabbedMesh, Color3.Green());
-    }
-  }
-
-}
-
-function createSphere(scene: Scene) {
-  const sphere = MeshBuilder.CreateSphere("sphere", {diameter: 0.5}, scene);
-  sphere.position = new Vector3(1, 2.5, 1);
+function createSphere (scene: Scene): Mesh {
+  const sphere = MeshBuilder.CreateSphere('sphere', { diameter: 0.5 }, scene)
+  sphere.position = new Vector3(1, 2.5, 1)
   sphere.physicsImpostor = new PhysicsImpostor(sphere, PhysicsImpostor.SphereImpostor, {
     mass: 1,
     restitution: 0.9
-  }, scene);
-  return sphere;
+  }, scene)
+  return sphere
 }
 
-function createGroundParallax(scene: Scene) {
-  const numberOfTiles = 20;
-  const ground = MeshBuilder.CreateGround('ground', {height: 40, width: 40, subdivisions: numberOfTiles}, scene);
-  const material = new StandardMaterial("groundMaterial", scene)
-  const texture = new Texture("resources/textures/floor/floor.png", scene);
-  const bumpTexture = new Texture("resources/textures/floor/floor_bump.png", scene);
+function createGround (scene: Scene): Mesh {
+  const numberOfTiles = 20
+  const ground = MeshBuilder.CreateGround('ground', { height: 40, width: 40, subdivisions: numberOfTiles }, scene)
+  const material = new StandardMaterial('groundMaterial', scene)
+  const texture = new Texture('resources/textures/floor/floor.png', scene)
+  const bumpTexture = new Texture('resources/textures/floor/floor_bump.png', scene)
   texture.uScale = numberOfTiles
   texture.vScale = numberOfTiles
   bumpTexture.uScale = numberOfTiles
   bumpTexture.vScale = numberOfTiles
-  material.diffuseTexture = texture;
+  material.diffuseTexture = texture
   material.bumpTexture = bumpTexture
 
-  material.useParallax = true;
-  material.useParallaxOcclusion = true;
-  material.parallaxScaleBias = 0.1;
-  material.specularPower = 1000.0;
-  material.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+  material.useParallax = true
+  material.useParallaxOcclusion = true
+  material.parallaxScaleBias = 0.1
+  material.specularPower = 1000.0
+  material.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5)
 
   ground.material = material
-  ground.physicsImpostor = new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.9}, scene);
-  return ground;
+  ground.physicsImpostor = new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene)
+  return ground
 }
 
+function createSkybox (scene: Scene): Mesh {
+  const skybox = Mesh.CreateBox('skyBox', 1000, scene)
+  skybox.isPickable = false
+  const skyboxMaterial = new StandardMaterial('skyBoxMaterial', scene)
+  skyboxMaterial.backFaceCulling = false
+  skyboxMaterial.reflectionTexture = new CubeTexture('resources/textures/cube/MilkyWay/dark-s', scene)
+  skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE
+  skyboxMaterial.diffuseColor = new Color3(0, 0, 0)
+  skyboxMaterial.specularColor = new Color3(0, 0, 0)
+  skyboxMaterial.disableLighting = true
+  skybox.material = skyboxMaterial
+  return skybox
+}
 
+function createScene (engine: Engine): Scene {
+  const scene = new Scene(engine)
+  scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon))
 
-function createSkybox(scene: Scene) {
-  const skybox = Mesh.CreateBox("skyBox", 1000, scene);
-  skybox.isPickable = false;
-  const skyboxMaterial = new StandardMaterial("skyBoxMaterial", scene);
-  skyboxMaterial.backFaceCulling = false;
-  skyboxMaterial.reflectionTexture = new CubeTexture("resources/textures/cube/MilkyWay/dark-s", scene);
-  skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
-  skyboxMaterial.diffuseColor = new Color3(0, 0, 0);
-  skyboxMaterial.specularColor = new Color3(0, 0, 0);
-  skyboxMaterial.disableLighting = true;
-  skybox.material = skyboxMaterial;
-  return skybox;
+  const vrHelper = scene.createDefaultVRExperience()
+  vrHelper.enableInteractions()
+  const ground = createGround(scene)
+  vrHelper.enableTeleportation({ floorMeshes: [ground] })
+
+  createSkybox(scene)
+
+  const hemisphericLight = new HemisphericLight('light1', new Vector3(1, 1, 0), scene)
+  const pointLight = new PointLight('light2', new Vector3(0, 1, -1), scene)
+
+  const sphere = createSphere(scene)
+
+  const grabbables: Set<Mesh> = new Set([sphere])
+  const grabLogic = new GrabLogic(scene, vrHelper, grabbables)
+
+  return scene
+}
+
+export function run (): void {
+  const canvas = document.getElementById('main-canvas') as HTMLCanvasElement
+  const engine = new Engine(canvas, true)
+  const scene = createScene(engine)
+  engine.runRenderLoop(() => scene.render())
+  window.addEventListener('resize', () => engine.resize())
 }

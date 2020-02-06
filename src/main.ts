@@ -1,3 +1,3 @@
-import { run } from './app/app-physics';
+import { run } from './app/app'
 
-run();
+run()

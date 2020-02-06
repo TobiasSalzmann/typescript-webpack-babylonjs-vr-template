@@ -5,7 +5,8 @@
   "scripts": {
     "start": "webpack-dev-server",
     "start-network": "webpack-dev-server --host 0.0.0.0",
-    "build": "webpack --mode=production"
+    "build": "webpack --mode=production",
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
     "babylonjs": "^4.0.3",
@@ -18,6 +19,14 @@
     "webpack-cli": "^3.3.7"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "2",
+    "@typescript-eslint/parser": "^2.19.0",
+    "eslint-config-standard-with-typescript": "^12.0.1",
+    "eslint-plugin-import": "2",
+    "eslint-plugin-node": "9",
+    "eslint-plugin-promise": "4",
+    "eslint-plugin-standard": "4",
+    "eslint": "6",
     "webpack-dev-server": "^3.8.0"
   }
 }
