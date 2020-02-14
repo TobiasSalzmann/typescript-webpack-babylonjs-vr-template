@@ -1,15 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var babylonjs_1 = require("babylonjs");
-var GrabLogic_1 = require("./GrabLogic");
-var cannon = require("cannon");
-function createSphere(scene) {
+var ConnectLogic_1 = require("./ConnectLogic");
+function createSphere(scene, position) {
+    if (position === void 0) { position = new babylonjs_1.Vector3(0, 0, 0); }
     var sphere = babylonjs_1.MeshBuilder.CreateSphere('sphere', { diameter: 0.5 }, scene);
-    sphere.position = new babylonjs_1.Vector3(1, 2.5, 1);
-    sphere.physicsImpostor = new babylonjs_1.PhysicsImpostor(sphere, babylonjs_1.PhysicsImpostor.SphereImpostor, {
-        mass: 0.1,
-        restitution: 0.9
-    }, scene);
+    sphere.position = position;
     return sphere;
 }
 function createGround(scene) {
@@ -30,7 +26,6 @@ function createGround(scene) {
     material.specularPower = 1000.0;
     material.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
     ground.material = material;
-    ground.physicsImpostor = new babylonjs_1.PhysicsImpostor(ground, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
     return ground;
 }
 function createSkybox(scene) {
@@ -48,7 +43,6 @@ function createSkybox(scene) {
 }
 function createScene(engine) {
     var scene = new babylonjs_1.Scene(engine);
-    scene.enablePhysics(new babylonjs_1.Vector3(0, -9.81, 0), new babylonjs_1.CannonJSPlugin(true, 10, cannon));
     var vrHelper = scene.createDefaultVRExperience();
     vrHelper.enableInteractions();
     var ground = createGround(scene);
@@ -56,9 +50,12 @@ function createScene(engine) {
     createSkybox(scene);
     var hemisphericLight = new babylonjs_1.HemisphericLight('light1', new babylonjs_1.Vector3(1, 1, 0), scene);
     var pointLight = new babylonjs_1.PointLight('light2', new babylonjs_1.Vector3(0, 1, -1), scene);
-    var sphere = createSphere(scene);
-    var grabbables = new Set([sphere]);
-    var grabLogic = new GrabLogic_1.GrabLogic(scene, vrHelper, grabbables);
+    var sphere1 = createSphere(scene, new babylonjs_1.Vector3(2, 1, 2));
+    var sphere2 = createSphere(scene, new babylonjs_1.Vector3(-2, 1, 2));
+    var sphere3 = createSphere(scene, new babylonjs_1.Vector3(-2, 1, -2));
+    var sphere4 = createSphere(scene, new babylonjs_1.Vector3(2, 1, -2));
+    var grabbables = new Set([sphere1, sphere2, sphere3, sphere4]);
+    var connectLogic = new ConnectLogic_1.ConnectLogic(scene, vrHelper, grabbables);
     return scene;
 }
 function run() {

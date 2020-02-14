@@ -13,16 +13,12 @@ import {
   PhysicsImpostor,
   CannonJSPlugin
 } from 'babylonjs'
-import { GrabLogic } from './GrabLogic'
 import * as cannon from 'cannon'
+import { ConnectLogic } from './ConnectLogic'
 
-function createSphere (scene: Scene): Mesh {
+function createSphere (scene: Scene, position = new Vector3(0, 0, 0)): Mesh {
   const sphere = MeshBuilder.CreateSphere('sphere', { diameter: 0.5 }, scene)
-  sphere.position = new Vector3(1, 2.5, 1)
-  sphere.physicsImpostor = new PhysicsImpostor(sphere, PhysicsImpostor.SphereImpostor, {
-    mass: 0.1,
-    restitution: 0.9
-  }, scene)
+  sphere.position = position
   return sphere
 }
 
@@ -46,7 +42,6 @@ function createGround (scene: Scene): Mesh {
   material.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5)
 
   ground.material = material
-  ground.physicsImpostor = new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene)
   return ground
 }
 
@@ -66,7 +61,6 @@ function createSkybox (scene: Scene): Mesh {
 
 function createScene (engine: Engine): Scene {
   const scene = new Scene(engine)
-  scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon))
 
   const vrHelper = scene.createDefaultVRExperience()
   vrHelper.enableInteractions()
@@ -78,10 +72,13 @@ function createScene (engine: Engine): Scene {
   const hemisphericLight = new HemisphericLight('light1', new Vector3(1, 1, 0), scene)
   const pointLight = new PointLight('light2', new Vector3(0, 1, -1), scene)
 
-  const sphere = createSphere(scene)
+  const sphere1 = createSphere(scene, new Vector3(2, 1, 2))
+  const sphere2 = createSphere(scene, new Vector3(-2, 1, 2))
+  const sphere3 = createSphere(scene, new Vector3(-2, 1, -2))
+  const sphere4 = createSphere(scene, new Vector3(2, 1, -2))
 
-  const grabbables: Set<Mesh> = new Set([sphere])
-  const grabLogic = new GrabLogic(scene, vrHelper, grabbables)
+  const grabbables: Set<Mesh> = new Set([sphere1, sphere2, sphere3, sphere4])
+  const connectLogic = new ConnectLogic(scene, vrHelper, grabbables)
 
   return scene
 }

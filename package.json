@@ -9,12 +9,12 @@
     "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
-    "babylonjs": "^4.0.3",
-    "babylonjs-gui": "^4.0.3",
-    "babylonjs-loaders": "^4.0.3",
+    "babylonjs": "^4.1.0-beta.23",
+    "babylonjs-gui": "^4.1.0-beta.23",
+    "babylonjs-loaders": "^4.1.0-beta.23",
     "cannon": "^0.6.2",
     "ts-loader": "^6.0.4",
-    "typescript": "^3.5.3",
+    "typescript": "^3.7.5",
     "webpack": "^4.39.2",
     "webpack-cli": "^3.3.7"
   },

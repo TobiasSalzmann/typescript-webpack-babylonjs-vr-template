@@ -1,3 +1,3 @@
-import { run } from './app/app'
+import { run } from './app/nodes'
 
 run()
