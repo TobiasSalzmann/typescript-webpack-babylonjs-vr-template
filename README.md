@@ -1,14 +1,16 @@
-# TypeScript + Webpack + Three.js VR template
-
-[![Build Status](https://travis-ci.org/mterczynski/typescript-webpack-threejs-template.svg?branch=master)](https://travis-ci.org/mterczynski/typescript-webpack-threejs-template)
+# TypeScript + Webpack + Babylon.js VR template
 
 ## Install dependencies
 
-    yarn
+    yarn install
 
 ## Run project in watch mode
 
     yarn start
+    
+## Run project so it can be accessed through the network
+
+    yarn start-network
 
 ## Build project
 
